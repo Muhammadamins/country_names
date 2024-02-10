@@ -11,7 +11,6 @@ class SearchCountry extends StatefulWidget {
 }
 
 class _SearchCountryState extends State<SearchCountry> {
-
   final controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -19,22 +18,18 @@ class _SearchCountryState extends State<SearchCountry> {
       appBar: AppBar(),
       body: Column(
         children: [
-
           Padding(
             padding: const EdgeInsets.all(30),
             child: TextField(
-            controller:controller,
-            onEditingComplete: (){
-              setState(() {
-                
-              });
-            },
-            
+              controller: controller,
+              onEditingComplete: () {
+                setState(() {});
+              },
             ),
           ),
           Query(
-
-            options: QueryOptions(document: gql("""  
+              options: QueryOptions(
+                  document: gql("""  
 
 
 
@@ -118,64 +113,66 @@ query  {
 
 */
 
-            
-            )),
+                      )),
+              builder: (result, {refetch, fetchMore}) {
+                if (result.hasException) {
+                  return const Expanded(
+                      child: Center(
+                    child: Text('Nimadir xato ketdi'),
+                  ));
+                }
 
-            builder: (result ,{refetch , fetchMore}) {
+                if (result.isLoading) {
+                  return const Expanded(
+                      child: Center(
+                    child: CupertinoActivityIndicator(),
+                  ));
+                }
 
-              if (result.hasException) {
-                 return Expanded(child: Center(
-                
-                child: Text('Nimadir xato ketdi'),
-                
+                print(result.data);
+                print('==================');
+                print(result.data);
+
+                final data =
+                    CountryClass.fromJson(result.data?['country'] ?? {});
+                return Expanded(
+                    child: Column(
+                  children: [
+                    Text(
+                      """World name: ${data.name}""",
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    Text(
+                      """Poytaxti: ${data.capital}""",
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    Text(
+                      """Pul birligi: ${data.currency}""",
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    Text(
+                      """Davlat tillari: ${data.languages}""",
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                    Center(
+                      child: Text(
+                        """ ${data.emoji}""",
+                        style: const TextStyle(
+                          fontSize: 50,
+                        ),
+                      ),
+                    ),
+                  ],
                 ));
-              }
-
-              if (result.isLoading) {
-                 return Expanded(child: Center(
-                
-                child: CupertinoActivityIndicator(),
-                
-                ));
-              }
-
-              print(result.data);
-              print('==================');
-              print(result.data);
-
-              final data = CountryClass.fromJson(result.data?['country'] ?? {});
-              return Expanded(child: Column(
-                children: [
-
-     Text("""World name: ${data.name}""",style: TextStyle(
-                      fontSize: 20,
-                    ),),
-
-
-                     Text("""Poytaxti: ${data.capital}""",style: TextStyle(
-                      fontSize: 20,
-                    ),),
-
-                     Text("""Nomi: ${data.currency}""",style: TextStyle(
-                      fontSize: 20,
-                    ),),
-                     Text("""Tillar ${data.languages}""",style: TextStyle(
-                      fontSize: 20,
-                    ),),
-                     
-
-                     Center(
-                       child: Text(""" ${data.emoji}""",style: TextStyle(
-                        fontSize: 100,
-                                           ),),
-                     ),
-  
-
-                
-                ],
-              ));
-            }
-          ),
+              }),
         ],
       ),
     );
